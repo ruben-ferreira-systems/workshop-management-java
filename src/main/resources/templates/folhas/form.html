@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Folha de Obra</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='folhas'"></div>
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Nova Folha de Obra')}"></div>
+    <main class="page-content">
+
+        <div class="card">
+            <div class="card-header"><h2>Cabeçalho</h2></div>
+            <div style="padding:20px">
+                <form th:action="@{/folhas/guardar}" method="post" class="form-grid">
+                    <input type="hidden" th:name="id" th:value="${folha.id}">
+
+                    <!-- Linha 1: Data + Veículo + Mecânico -->
+                    <div style="display:grid; grid-template-columns: 180px 1fr 1fr; gap:16px">
+                        <div class="form-group">
+                            <label>Data de Entrada</label>
+                            <input type="date" name="dataEntrada" class="filter-input"
+                                   th:value="${folha.dataEntrada}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Veículo</label>
+                            <select name="idVeiculo" class="filter-input" required>
+                                <option value="">-- Selecionar --</option>
+                                <option th:each="v : ${veiculos}"
+                                        th:value="${v.id}"
+                                        th:text="${v.matricula + ' — ' + v.marca + ' ' + v.modelo}"
+                                        th:selected="${folha.veiculo != null && folha.veiculo.id == v.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mecânico</label>
+                            <select name="idMecanico" class="filter-input" required>
+                                <option value="">-- Selecionar --</option>
+                                <option th:each="m : ${mecanicos}"
+                                        th:value="${m.id}"
+                                        th:text="${m.nome}"
+                                        th:selected="${folha.mecanico != null && folha.mecanico.id == m.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: Descrição curta -->
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" name="descricao" class="filter-input"
+                               th:value="${folha.descricao}"
+                               placeholder="Ex: Revisão geral, Substituição de travões..."
+                               maxlength="100">
+                    </div>
+
+                    <!-- Linha 3: Descrição Detalhe -->
+                    <div class="form-group">
+                        <label>Descrição Detalhada</label>
+                        <textarea name="descricaoDetalhe" class="filter-input" rows="3"
+                                  placeholder="Detalhe dos trabalhos a realizar..."
+                                  th:text="${folha.descricaoDetalhe}"></textarea>
+                    </div>
+
+                    <!-- Linha 4: Observações -->
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea name="observacoes" class="filter-input" rows="3"
+                                  placeholder="Notas adicionais, condições do veículo..."
+                                  th:text="${folha.observacoes}"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a th:href="@{/folhas}" class="btn btn-outline">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

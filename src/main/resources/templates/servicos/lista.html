@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviços</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='servicos'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Serviços')}"></div>
+    <main class="page-content">
+
+        <div class="filter-bar">
+            <form method="get" th:action="@{/servicos}" style="display:flex;gap:8px">
+                <input type="text" name="q" placeholder="Pesquisar serviço..."
+                       th:value="${q}" class="filter-input">
+                <button type="submit" class="btn btn-outline">Pesquisar</button>
+            </form>
+            <a th:href="@{/servicos/novo}" class="btn btn-primary">+ Novo Serviço</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Serviços</h2></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Designação</th>
+                    <th>Preço Tabela</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(servicos)}">
+                    <td colspan="4" class="empty-row">Nenhum serviço encontrado.</td>
+                </tr>
+                <tr th:each="s : ${servicos}">
+                    <td th:text="${s.id}"></td>
+                    <td th:text="${s.designacao}"></td>
+                    <td th:text="${#numbers.formatDecimal(s.precoTabela, 1, 2) + ' €'}"></td>
+                    <td>
+                        <a th:href="@{/servicos/{id}/editar(id=${s.id})}" class="btn btn-outline">Editar</a>
+                        <form th:action="@{/servicos/{id}/eliminar(id=${s.id})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Eliminar serviço?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

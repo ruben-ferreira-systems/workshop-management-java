@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviço</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='servicos'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar(${servico.id == null ? 'Novo Serviço' : 'Editar Serviço'})}"></div>
+    <main class="page-content">
+
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${servico.id == null ? 'Novo Serviço' : 'Editar Serviço'}"></h2>
+            </div>
+            <div style="padding:20px">
+                <form th:action="@{/servicos/guardar}" th:object="${servico}" method="post" class="form-grid">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="form-group">
+                        <label for="designacao">Designação</label>
+                        <input type="text" id="designacao" th:field="*{designacao}"
+                               class="filter-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precoTabela">Preço Tabela (€)</label>
+                        <input type="number" id="precoTabela" th:field="*{precoTabela}"
+                               class="filter-input" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a th:href="@{/servicos}" class="btn btn-outline">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

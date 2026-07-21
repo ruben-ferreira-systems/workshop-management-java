@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Veículos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='veiculos'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Veículos')}"></div>
+    <main class="page-content">
+        <div th:if="${cliente != null and !#strings.isEmpty(cliente)}"
+             style="margin-bottom: 8px; font-size: 13px; color: var(--text-muted);">
+            A mostrar veículos de <strong th:text="${cliente}"></strong> —
+            <a th:href="@{/clientes}">voltar a clientes</a>
+        </div>
+
+        <form method="get" th:action="@{/veiculos}" class="filter-bar">
+            <input type="text" name="matricula" placeholder="Matrícula..."
+                   th:value="${matricula}" class="filter-input"/>
+            <input type="text" name="marca" placeholder="Marca..."
+                   th:value="${marca}" class="filter-input"/>
+            <input type="text" name="cliente" placeholder="Nome do cliente..."
+                   th:value="${cliente}" class="filter-input"/>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a th:href="@{/veiculos}" class="btn btn-outline">Limpar</a>
+            <a th:href="@{/veiculos/novo}" class="btn btn-primary" style="margin-left: auto;">+ Novo Veículo</a>
+        </form>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Lista de Veículos</h2>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Matrícula</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Ano</th>
+                    <th>Cliente</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="veiculo : ${veiculos}">
+                    <td th:text="${veiculo.id}"></td>
+                    <td th:text="${veiculo.matricula}"></td>
+                    <td th:text="${veiculo.marca}"></td>
+                    <td th:text="${veiculo.modelo}"></td>
+                    <td th:text="${veiculo.ano}"></td>
+                    <td th:text="${veiculo.cliente.nome}"></td>
+                    <td>
+                        <a th:href="@{/veiculos/editar/{id}(id=${veiculo.id})}"
+                           class="btn btn-outline">Editar</a>
+                        <form th:action="@{/veiculos/apagar/{id}(id=${veiculo.id})}"
+                              method="post"
+                              style="display:inline;"
+                              onsubmit="return confirm('Apagar este veículo?')">
+                            <button type="submit" class="btn btn-danger">Apagar</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(veiculos)}">
+                    <td colspan="7" class="empty-row">Nenhum veículo encontrado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

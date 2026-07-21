@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- FRAGMENTO: Sidebar -->
+<aside th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-logo">Gestor <span>Oficina</span></div>
+    <nav class="sidebar-nav">
+        <div class="sidebar-section">Gestão</div>
+        <a th:href="@{/dashboard}"  th:classappend="${activePage == 'dashboard'}  ? 'active'">Dashboard</a>
+        <a th:href="@{/clientes}"   th:classappend="${activePage == 'clientes'}   ? 'active'">Clientes</a>
+        <a th:href="@{/mecanicos}"  th:classappend="${activePage == 'mecanicos'}  ? 'active'">Mecânicos</a>
+        <a th:href="@{/veiculos}"   th:classappend="${activePage == 'veiculos'}   ? 'active'">Veículos</a>
+        <a th:href="@{/folhas}" th:classappend="${activePage == 'folhas'} ? 'active'">
+            Folhas de Obra
+        </a>
+        <div class="sidebar-section">Catálogo</div>
+        <a th:href="@{/servicos}"   th:classappend="${activePage == 'servicos'}   ? 'active'">Serviços</a>
+        <a th:href="@{/pecas}"      th:classappend="${activePage == 'pecas'}      ? 'active'">Peças</a>
+        <div class="sidebar-section">Sistema</div>
+        <a th:href="@{/definicoes}" th:classappend="${activePage == 'definicoes'} ? 'active'">Definições</a>
+    </nav>
+</aside>
+
+<!-- FRAGMENTO: Topbar -->
+<header th:fragment="topbar(titulo)" class="topbar">
+    <span class="topbar-title" th:text="${titulo}"></span>
+    <span class="topbar-meta">Gestor Oficina</span>
+</header>
+
+</html>

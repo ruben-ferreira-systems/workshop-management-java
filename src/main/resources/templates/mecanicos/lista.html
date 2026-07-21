@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mecânicos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='mecanicos'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Mecânicos')}"></div>
+    <main class="page-content">
+
+        <form method="get" th:action="@{/mecanicos}" class="filter-bar">
+            <input type="text" name="nome" placeholder="Pesquisar por nome..."
+                   th:value="${nome}" class="filter-input"/>
+            <input type="text" name="nif" placeholder="Pesquisar por NIF..."
+                   th:value="${nif}" class="filter-input"/>
+            <input type="text" name="especialidade" placeholder="Especialidade..."
+                   th:value="${especialidade}" class="filter-input"/>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a th:href="@{/mecanicos}" class="btn btn-outline">Limpar</a>
+            <a th:href="@{/mecanicos/novo}" class="btn btn-primary" style="margin-left: auto;">+ Novo Mecânico</a>
+        </form>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Lista de Mecânicos</h2>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NIF</th>
+                    <th>Nome</th>
+                    <th>Especialidade</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="mecanico : ${mecanicos}">
+                    <td th:text="${mecanico.id}"></td>
+                    <td th:text="${mecanico.nif}"></td>
+                    <td th:text="${mecanico.nome}"></td>
+                    <td th:text="${mecanico.especialidade}"></td>
+                    <td>
+                        <a th:href="@{/mecanicos/editar/{id}(id=${mecanico.id})}"
+                           class="btn btn-outline">Editar</a>
+                        <form th:action="@{/mecanicos/apagar/{id}(id=${mecanico.id})}"
+                              method="post"
+                              style="display:inline;"
+                              onsubmit="return confirm('Apagar este mecânico?')">
+                            <button type="submit" class="btn btn-danger">Apagar</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(mecanicos)}">
+                    <td colspan="5" class="empty-row">Nenhum mecânico encontrado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

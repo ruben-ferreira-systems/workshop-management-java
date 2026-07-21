@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Folha de Obra #' + ${folha.id}"></title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 13px;
+            color: #1e2330;
+            background: #fff;
+            padding: 32px;
+        }
+
+        /* Cabeçalho */
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #1a4f8a;
+        }
+
+        .print-logo img {
+            max-height: 70px;
+            max-width: 180px;
+        }
+
+        .print-logo .no-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a4f8a;
+        }
+
+        .print-oficina {
+            text-align: right;
+        }
+
+        .print-oficina .nome {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a4f8a;
+            margin-bottom: 4px;
+        }
+
+        .print-oficina .info {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Título da folha */
+        .print-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .print-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a4f8a;
+        }
+
+        .print-title .data {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Metadados */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 14px;
+            background: #f4f6f9;
+            border-radius: 4px;
+        }
+
+        .meta-item .label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 3px;
+        }
+
+        .meta-item .value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e2330;
+        }
+
+        /* Descrições */
+        .descricao-block {
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border: 1px solid #dde2ed;
+            border-radius: 4px;
+        }
+
+        .descricao-block .label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .descricao-block .value {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Tabelas */
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1a4f8a;
+            margin-bottom: 8px;
+            margin-top: 20px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #dde2ed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        thead th {
+            background: #f2f5fb;
+            color: #6b7280;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 7px 10px;
+            text-align: left;
+            border-bottom: 1px solid #dde2ed;
+        }
+
+        tbody td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #eef0f5;
+            color: #1e2330;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* Total */
+        .total-block {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 2px solid #1a4f8a;
+        }
+
+        .total-block .total-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a4f8a;
+        }
+
+        .total-block .total-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a4f8a;
+            margin-left: 12px;
+        }
+
+        /* Assinaturas */
+        .assinaturas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 48px;
+        }
+
+        .assinatura-line {
+            border-top: 1px solid #1e2330;
+            padding-top: 8px;
+            font-size: 11px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* Rodapé */
+        .print-footer {
+            margin-top: 32px;
+            padding-top: 12px;
+            border-top: 1px solid #dde2ed;
+            font-size: 10px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* Botão imprimir — escondido na impressão */
+        .btn-print {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 10px 20px;
+            background: #1a4f8a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        @media print {
+            .btn-print { display: none; }
+            body { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botão imprimir -->
+<button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+
+<!-- Cabeçalho -->
+<div class="print-header">
+    <div class="print-logo">
+        <img th:if="${logoOficina != null && !logoOficina.isEmpty()}"
+             th:src="${logoOficina}" alt="Logo">
+        <div class="no-logo"
+             th:if="${logoOficina == null || logoOficina.isEmpty()}"
+             th:text="${nomeOficina ?: 'Oficina'}">
+        </div>
+    </div>
+    <div class="print-oficina">
+        <div class="nome" th:text="${nomeOficina ?: ''}"></div>
+        <div class="info">
+            <div th:if="${moradaOficina}" th:text="${moradaOficina}"></div>
+            <div th:if="${telefoneOficina}" th:text="${telefoneOficina}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Título -->
+<div class="print-title">
+    <h1>Folha de Obra #<span th:text="${folha.id}"></span></h1>
+    <span class="data" th:text="${#temporals.format(folha.dataEntrada, 'dd/MM/yyyy')}"></span>
+</div>
+
+<!-- Metadados -->
+<div class="meta-grid">
+    <div class="meta-item">
+        <div class="label">Veículo</div>
+        <div class="value" th:text="${folha.veiculo.matricula + ' — ' + folha.veiculo.marca + ' ' + folha.veiculo.modelo}"></div>
+    </div>
+    <div class="meta-item">
+        <div class="label">Cliente</div>
+        <div class="value" th:text="${folha.veiculo.cliente.nome}"></div>
+    </div>
+    <div class="meta-item">
+        <div class="label">Mecânico</div>
+        <div class="value" th:text="${folha.mecanico.nome}"></div>
+    </div>
+</div>
+
+<!-- Descrição -->
+<div class="descricao-block" th:if="${folha.descricao}">
+    <div class="label">Descrição</div>
+    <div class="value" th:text="${folha.descricao}"></div>
+</div>
+
+<div class="descricao-block" th:if="${folha.descricaoDetalhe}">
+    <div class="label">Descrição Detalhada</div>
+    <div class="value" th:text="${folha.descricaoDetalhe}"></div>
+</div>
+
+<div class="descricao-block" th:if="${folha.observacoes}">
+    <div class="label">Observações</div>
+    <div class="value" th:text="${folha.observacoes}"></div>
+</div>
+
+<!-- Serviços -->
+<div class="section-title">Serviços</div>
+<table>
+    <thead>
+    <tr>
+        <th>Designação</th>
+        <th style="text-align:right">Preço Aplicado</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(folha.linhasServico)}">
+        <td colspan="2" style="color:#6b7280;padding:10px">Nenhum serviço.</td>
+    </tr>
+    <tr th:each="ls : ${folha.linhasServico}">
+        <td th:text="${ls.servico.designacao}"></td>
+        <td style="text-align:right" th:text="${#numbers.formatDecimal(ls.precoAplicado, 1, 2) + ' €'}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Peças -->
+<div class="section-title">Peças</div>
+<table>
+    <thead>
+    <tr>
+        <th>Referência</th>
+        <th>Nome</th>
+        <th style="text-align:right">Qtd</th>
+        <th style="text-align:right">Preço Unit.</th>
+        <th style="text-align:right">Subtotal</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(folha.linhasPeca)}">
+        <td colspan="5" style="color:#6b7280;padding:10px">Nenhuma peça.</td>
+    </tr>
+    <tr th:each="lp : ${folha.linhasPeca}">
+        <td th:text="${lp.peca.referencia}"></td>
+        <td th:text="${lp.peca.nome}"></td>
+        <td style="text-align:right" th:text="${lp.quantidade}"></td>
+        <td style="text-align:right" th:text="${#numbers.formatDecimal(lp.precoVendaHist, 1, 2) + ' €'}"></td>
+        <td style="text-align:right" th:text="${#numbers.formatDecimal(lp.precoVendaHist * lp.quantidade, 1, 2) + ' €'}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Total -->
+<div class="total-block">
+    <span class="total-label">Total</span>
+    <span class="total-value" th:text="${#numbers.formatDecimal(total, 1, 2) + ' €'}"></span>
+</div>
+
+<!-- Assinaturas -->
+<div class="assinaturas">
+    <div class="assinatura-line">Assinatura do Cliente</div>
+    <div class="assinatura-line">Assinatura do Mecânico</div>
+</div>
+
+<!-- Rodapé -->
+<div class="print-footer">
+    Documento gerado em
+    <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+</div>
+
+</body>
+</html>

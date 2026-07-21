@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Peças</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='pecas'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Peças')}"></div>
+    <main class="page-content">
+
+        <div class="filter-bar">
+            <form method="get" th:action="@{/pecas}" style="display:flex;gap:8px">
+                <input type="text" name="q" placeholder="Pesquisar peça..."
+                       th:value="${q}" class="filter-input">
+                <button type="submit" class="btn btn-outline">Pesquisar</button>
+            </form>
+            <a th:href="@{/pecas/nova}" class="btn btn-primary">+ Nova Peça</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Peças</h2></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Referência</th>
+                    <th>Nome</th>
+                    <th>Stock Atual</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(pecas)}">
+                    <td colspan="5" class="empty-row">Nenhuma peça encontrada.</td>
+                </tr>
+                <tr th:each="p : ${pecas}">
+                    <td th:text="${p.id}"></td>
+                    <td th:text="${p.referencia}"></td>
+                    <td th:text="${p.nome}"></td>
+                    <td>
+              <span th:text="${p.stockAtual}"
+                    th:classappend="${p.stockAtual == 0} ? 'badge badge-gray' : 'badge badge-green'">
+              </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/pecas/{id}/editar(id=${p.id})}" class="btn btn-outline">Editar</a>
+                        <form th:action="@{/pecas/{id}/eliminar(id=${p.id})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Eliminar peça?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

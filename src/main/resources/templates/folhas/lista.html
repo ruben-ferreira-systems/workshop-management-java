@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Folhas de Obra</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='folhas'"></div>
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Folhas de Obra')}"></div>
+    <main class="page-content">
+
+        <div class="filter-bar">
+            <a th:href="@{/folhas/nova}" class="btn btn-primary">+ Nova Folha</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Folhas de Obra</h2></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Veículo</th>
+                    <th>Mecânico</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${folhas.empty}">
+                    <td colspan="6" class="empty-row">Nenhuma folha de obra registada.</td>
+                </tr>
+                <tr th:each="f : ${folhas}">
+                    <td th:text="${f.id}"></td>
+                    <td th:text="${#temporals.format(f.dataEntrada, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${f.veiculo.matricula + ' — ' + f.veiculo.marca + ' ' + f.veiculo.modelo}"></td>
+                    <td th:text="${f.mecanico.nome}"></td>
+                    <td th:text="${f.descricao ?: '—'}"></td>
+                    <td>
+                        <a th:href="@{/folhas/{id}(id=${f.id})}" class="btn btn-outline">Ver</a>
+                        <a th:href="@{/folhas/{id}/editar(id=${f.id})}" class="btn btn-outline">Editar</a>
+                        <form th:action="@{/folhas/{id}/eliminar(id=${f.id})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Eliminar esta folha?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

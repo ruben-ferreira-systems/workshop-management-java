@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Peça</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='pecas'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar(${peca.id == null ? 'Nova Peça' : 'Editar Peça'})}"></div>
+    <main class="page-content">
+
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${peca.id == null ? 'Nova Peça' : 'Editar Peça'}"></h2>
+            </div>
+            <div style="padding:20px">
+                <form th:action="@{/pecas/guardar}" th:object="${peca}" method="post" class="form-grid">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="form-group">
+                        <label for="referencia">Referência</label>
+                        <input type="text" id="referencia" th:field="*{referencia}"
+                               class="filter-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" th:field="*{nome}"
+                               class="filter-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockAtual">Stock Atual</label>
+                        <input type="number" id="stockAtual" th:field="*{stockAtual}"
+                               class="filter-input" min="0" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a th:href="@{/pecas}" class="btn btn-outline">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

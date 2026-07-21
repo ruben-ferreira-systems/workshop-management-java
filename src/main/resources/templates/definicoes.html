@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Definições</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='definicoes'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Definições')}"></div>
+    <main class="page-content">
+
+        <!-- Mensagem de sucesso -->
+        <div th:if="${sucesso}"
+             style="background:#dcfce7;border:1px solid #166534;color:#166534;
+                padding:10px 16px;border-radius:4px;margin-bottom:16px;font-size:13px"
+             th:text="${sucesso}">
+        </div>
+
+        <!-- Gestão de Stock -->
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header"><h2>Gestão de Stock</h2></div>
+            <div style="padding:20px">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Controlo automático de stock</span>
+                        <span class="setting-desc">
+              Quando ativo, ao adicionar peças numa folha de obra o stock é decrementado
+              automaticamente. Ao eliminar a folha, o stock é reposto.
+            </span>
+                    </div>
+                    <form th:action="@{/definicoes/gestao-stock}" method="post">
+                        <input type="hidden" name="ativo" th:value="${!gestaoStock}">
+                        <button type="submit" class="btn"
+                                th:classappend="${gestaoStock} ? 'btn-primary' : 'btn-outline'"
+                                th:text="${gestaoStock} ? 'Ativo — Clique para desativar' : 'Inativo — Clique para ativar'">
+                        </button>
+                    </form>
+                </div>
+                <div class="setting-status">
+                    <span th:if="${gestaoStock}" class="badge badge-green">✓ Gestão de stock ativa</span>
+                    <span th:unless="${gestaoStock}" class="badge badge-gray">Gestão de stock inativa</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Identidade da Oficina -->
+        <div class="card">
+            <div class="card-header"><h2>Identidade da Oficina</h2></div>
+            <div style="padding:20px">
+
+                <!-- Preview do logo atual -->
+                <div th:if="${logoOficina != null && !logoOficina.isEmpty()}"
+                     style="margin-bottom:20px">
+                    <div style="color:var(--text-muted);font-size:11px;font-weight:600;
+                      text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">
+                        Logo Atual
+                    </div>
+                    <img th:src="${logoOficina}" alt="Logo da oficina"
+                         style="max-height:80px;max-width:200px;border:1px solid var(--border);
+                      border-radius:4px;padding:8px;background:#fff">
+                </div>
+
+                <!-- Upload logo -->
+                <form th:action="@{/definicoes/logo}" method="post"
+                      enctype="multipart/form-data"
+                      style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)">
+                    <div class="form-group">
+                        <label>Upload do Logo</label>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <input type="file" name="logo" accept="image/*" class="filter-input"
+                                   style="padding:5px">
+                            <button type="submit" class="btn btn-primary">Guardar Logo</button>
+                        </div>
+                        <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">
+              PNG, JPG ou SVG recomendado. Máx. 500KB.
+            </span>
+                    </div>
+                </form>
+
+                <!-- Informações da oficina -->
+                <form th:action="@{/definicoes/info}" method="post" class="form-grid">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+                        <div class="form-group">
+                            <label>Nome da Oficina</label>
+                            <input type="text" name="nomeOficina" class="filter-input"
+                                   th:value="${nomeOficina}"
+                                   placeholder="Ex: Auto Reparações Silva">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="text" name="telefoneOficina" class="filter-input"
+                                   th:value="${telefoneOficina}"
+                                   placeholder="Ex: 232 000 000">
+                        </div>
+                        <div class="form-group">
+                            <label>Morada</label>
+                            <input type="text" name="moradaOficina" class="filter-input"
+                                   th:value="${moradaOficina}"
+                                   placeholder="Ex: Rua Principal, 123, Viseu">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar Informações</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

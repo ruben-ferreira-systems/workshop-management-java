@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Folha de Obra</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}" th:with="activePage='folhas'"></div>
+
+<div class="main-wrapper">
+    <div th:replace="~{fragments/layout :: topbar('Detalhe da Folha')}"></div>
+    <main class="page-content">
+
+        <!-- Alerta de erro -->
+        <div th:if="${erro}"
+             style="background:#fef2f2;border:1px solid #c0392b;color:#c0392b;
+                padding:10px 16px;border-radius:4px;margin-bottom:16px;font-size:13px">
+            <span th:text="${erro}"></span>
+        </div>
+
+        <!-- Cabeçalho da folha -->
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header">
+                <h2>Folha #<span th:text="${folha.id}"></span>
+                    — <span th:text="${folha.descricao ?: 'Sem descrição'}"></span>
+                </h2>
+                <div style="display:flex;gap:8px">
+                    <a th:href="@{/folhas/{id}/editar(id=${folha.id})}" class="btn btn-outline">Editar</a>
+                    <a th:href="@{/folhas/{id}/imprimir(id=${folha.id})}" target="_blank" class="btn btn-outline">🖨 Imprimir</a>
+                    <form th:action="@{/folhas/{id}/eliminar(id=${folha.id})}" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Eliminar esta folha e repor stock?')">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Metadados -->
+            <div style="padding:16px;display:flex;gap:32px;font-size:13px;border-bottom:1px solid var(--border)">
+                <div>
+                    <div style="color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px">Data</div>
+                    <div th:text="${#temporals.format(folha.dataEntrada, 'dd/MM/yyyy')}"></div>
+                </div>
+                <div>
+                    <div style="color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px">Veículo</div>
+                    <div th:text="${folha.veiculo.matricula + ' — ' + folha.veiculo.marca + ' ' + folha.veiculo.modelo}"></div>
+                </div>
+                <div>
+                    <div style="color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px">Mecânico</div>
+                    <div th:text="${folha.mecanico.nome}"></div>
+                </div>
+            </div>
+
+            <!-- Descrição Detalhada -->
+            <div th:if="${folha.descricaoDetalhe}"
+                 style="padding:12px 16px;border-bottom:1px solid var(--border)">
+                <div style="color:var(--text-muted);font-size:11px;font-weight:600;
+                    text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">
+                    Descrição Detalhada
+                </div>
+                <div style="font-size:13px;line-height:1.6" th:text="${folha.descricaoDetalhe}"></div>
+            </div>
+
+            <!-- Observações -->
+            <div th:if="${folha.observacoes}" style="padding:12px 16px">
+                <div style="color:var(--text-muted);font-size:11px;font-weight:600;
+                    text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">
+                    Observações
+                </div>
+                <div style="font-size:13px;line-height:1.6;color:var(--text-muted)"
+                     th:text="${folha.observacoes}"></div>
+            </div>
+        </div>
+
+        <!-- Serviços -->
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header"><h2>Serviços</h2></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Serviço</th>
+                    <th>Preço Aplicado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(folha.linhasServico)}">
+                    <td colspan="2" class="empty-row">Nenhum serviço adicionado.</td>
+                </tr>
+                <tr th:each="ls : ${folha.linhasServico}">
+                    <td th:text="${ls.servico.designacao}"></td>
+                    <td th:text="${#numbers.formatDecimal(ls.precoAplicado, 1, 2) + ' €'}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- Adicionar serviço -->
+            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#f9fafc">
+                <form th:action="@{/folhas/{id}/adicionar-servico(id=${folha.id})}" method="post"
+                      style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+                    <div class="form-group" style="margin:0">
+                        <label>Serviço</label>
+                        <select name="idServico" id="selectServico" class="filter-input"
+                                required onchange="carregarPrecoServico(this)">
+                            <option value="" data-preco="">-- Selecionar --</option>
+                            <option th:each="s : ${servicos}"
+                                    th:value="${s.id}"
+                                    th:text="${s.designacao}"
+                                    th:attr="data-preco=${s.precoTabela}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label>Preço (€)</label>
+                        <input type="number" step="0.01" name="precoAplicado" id="precoServico"
+                               class="filter-input" style="width:130px" placeholder="0.00" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Peças -->
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-header"><h2>Peças</h2></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Referência</th>
+                    <th>Peça</th>
+                    <th>Qtd</th>
+                    <th>Preço Unit.</th>
+                    <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(folha.linhasPeca)}">
+                    <td colspan="5" class="empty-row">Nenhuma peça adicionada.</td>
+                </tr>
+                <tr th:each="lp : ${folha.linhasPeca}">
+                    <td th:text="${lp.peca.referencia}"></td>
+                    <td th:text="${lp.peca.nome}"></td>
+                    <td th:text="${lp.quantidade}"></td>
+                    <td th:text="${#numbers.formatDecimal(lp.precoVendaHist, 1, 2) + ' €'}"></td>
+                    <td th:text="${#numbers.formatDecimal(lp.precoVendaHist * lp.quantidade, 1, 2) + ' €'}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- Adicionar peça -->
+            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#f9fafc">
+                <form th:action="@{/folhas/{id}/adicionar-peca(id=${folha.id})}" method="post"
+                      style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+                    <div class="form-group" style="margin:0">
+                        <label>Peça</label>
+                        <select name="idPeca" class="filter-input" required>
+                            <option value="">-- Selecionar --</option>
+                            <option th:each="p : ${pecas}"
+                                    th:value="${p.id}"
+                                    th:text="${p.referencia + ' — ' + p.nome + ' (stock: ' + p.stockAtual + ')'}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label>Quantidade</label>
+                        <input type="number" min="1" name="quantidade" class="filter-input"
+                               style="width:90px" value="1" required>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label>Preço Venda (€)</label>
+                        <input type="number" step="0.01" name="precoVenda" id="precoPeca"
+                               class="filter-input" style="width:130px" placeholder="0.00" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Total -->
+        <div style="display:flex;justify-content:flex-end">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;
+                  padding:16px 24px;font-size:15px;font-weight:600">
+                Total: <span th:text="${#numbers.formatDecimal(total, 1, 2) + ' €'}"></span>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    function carregarPrecoServico(select) {
+        const option = select.options[select.selectedIndex];
+        const preco = option.getAttribute('data-preco');
+        const input = document.getElementById('precoServico');
+        input.value = preco ? parseFloat(preco).toFixed(2) : '';
+    }
+</script>
+
+</body>
+</html>
