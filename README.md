@@ -12,7 +12,6 @@ This project was developed as a practical software engineering project to demons
 - Manage repair orders
 - Track repair status
 - Search records
-- Generate reports *(if applicable)*
 
 ## Technologies
 
